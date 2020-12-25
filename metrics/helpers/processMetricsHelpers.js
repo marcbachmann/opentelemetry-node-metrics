@@ -11,7 +11,7 @@ function createAggregatorByObjectName () {
 
     for (const key of all.keys()) all.set(key, 0)
     for (const [key, value] of current) all.set(key, value)
-    return current
+    return all
   }
 }
 
