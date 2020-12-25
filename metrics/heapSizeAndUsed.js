@@ -3,19 +3,16 @@ const NODEJS_HEAP_SIZE_TOTAL = 'nodejs_heap_size_total_bytes'
 const NODEJS_HEAP_SIZE_USED = 'nodejs_heap_size_used_bytes'
 const NODEJS_EXTERNAL_MEMORY = 'nodejs_external_memory_bytes'
 
-module.exports = (meter, config = {}) => {
-  const labels = config.labels ? config.labels : {}
-  const namePrefix = config.prefix ? config.prefix : ''
-
-  const heapSizeTotal = meter.createValueObserver(namePrefix + NODEJS_HEAP_SIZE_TOTAL, {
+module.exports = (meter, {labels, prefix}) => {
+  const heapSizeTotal = meter.createValueObserver(prefix + NODEJS_HEAP_SIZE_TOTAL, {
     description: 'Process heap size from Node.js in bytes.'
   })
 
-  const heapSizeUsed = meter.createValueObserver(namePrefix + NODEJS_HEAP_SIZE_USED, {
+  const heapSizeUsed = meter.createValueObserver(prefix + NODEJS_HEAP_SIZE_USED, {
     description: 'Process heap size used from Node.js in bytes.'
   })
 
-  const externalMemUsed = meter.createValueObserver(namePrefix + NODEJS_EXTERNAL_MEMORY, {
+  const externalMemUsed = meter.createValueObserver(prefix + NODEJS_EXTERNAL_MEMORY, {
     description: 'Node.js external memory size in bytes.'
   })
 

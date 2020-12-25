@@ -1,7 +1,12 @@
 # opentelemetry-node-metrics
 
+This module is an adoption of the metric set of [`prom-client`](https://www.npmjs.com/package/prom-client) for [`@opentelemetry/metrics`](https://www.npmjs.com/package/@opentelemetry/metrics).
 
-```
+There's no node cluster support as `@opentelemetry/metrics` doesn't support it.
+
+### Usage
+
+```js
 const {MeterProvider} = require('@opentelemetry/metrics');
 const {PrometheusExporter} = require('@opentelemetry/exporter-prometheus');
 
@@ -16,7 +21,7 @@ const meterProvider = new MeterProvider({
   interval: 2000,
 })
 
-require('./index')({meterProvider})
+require('./index')(meterProvider)
 ```
 
 

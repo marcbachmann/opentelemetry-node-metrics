@@ -2,7 +2,7 @@ const fs = require('fs')
 const PROCESS_MAX_FDS = 'process_max_fds'
 let maxFds
 
-module.exports = (meter, config = {}) => {
+module.exports = (meter, {prefix, labels}) => {
   if (maxFds === undefined) {
     // This will fail if a linux-like procfs is not available.
     try {
@@ -21,14 +21,10 @@ module.exports = (meter, config = {}) => {
   }
 
   if (maxFds === undefined) return
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
 
-  meter.createValueObserver(namePrefix + PROCESS_MAX_FDS, {
+  meter.createUpDownCounter(prefix + PROCESS_MAX_FDS, {
     description: 'Maximum number of open file descriptors.'
-  }, (observerResult) => {
-    observerResult.observe(maxFds, labels)
-  })
+  }).bind(labels).add(maxFds)
 }
 
 module.exports.metricNames = [PROCESS_MAX_FDS]

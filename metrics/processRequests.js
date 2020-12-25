@@ -3,14 +3,11 @@ const {aggregateByObjectName} = require('./helpers/processMetricsHelpers')
 const NODEJS_ACTIVE_REQUESTS = 'nodejs_active_requests'
 const NODEJS_ACTIVE_REQUESTS_TOTAL = 'nodejs_active_requests_total'
 
-module.exports = (meter, config = {}) => {
+module.exports = (meter, {prefix, labels}) => {
   // Don't do anything if the function is removed in later nodes (exists in node@6)
   if (typeof process._getActiveRequests !== 'function') return
 
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
-
-  meter.createValueObserver(namePrefix + NODEJS_ACTIVE_REQUESTS, {
+  meter.createValueObserver(prefix + NODEJS_ACTIVE_REQUESTS, {
     description: 'Number of active libuv requests grouped by request type. Every request type is C++ class name.' // eslint-disable-line max-len
   }, (observerResult) => {
     const requests = process._getActiveRequests()
@@ -22,11 +19,10 @@ module.exports = (meter, config = {}) => {
     }
   })
 
-  meter.createValueObserver(namePrefix + NODEJS_ACTIVE_REQUESTS_TOTAL, {
+  meter.createValueObserver(prefix + NODEJS_ACTIVE_REQUESTS_TOTAL, {
     description: 'Total number of active requests.'
   }, (observerResult) => {
-    const requests = process._getActiveRequests()
-    observerResult.observe(requests.length, labels)
+    observerResult.observe(process._getActiveRequests().length, labels)
   })
 }
 

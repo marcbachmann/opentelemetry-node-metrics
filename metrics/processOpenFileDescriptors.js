@@ -2,12 +2,10 @@ const fs = require('fs')
 const process = require('process')
 const PROCESS_OPEN_FDS = 'process_open_fds'
 
-module.exports = (meter, config = {}) => {
+module.exports = (meter, {prefix, labels}) => {
   if (process.platform !== 'linux') return
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
 
-  meter.createValueObserver(namePrefix + PROCESS_OPEN_FDS, {
+  meter.createValueObserver(prefix + PROCESS_OPEN_FDS, {
     description: 'Number of open file descriptors.'
   }, (observerResult) => {
     try {

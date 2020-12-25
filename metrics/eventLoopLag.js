@@ -13,41 +13,37 @@ const NODEJS_EVENTLOOP_LAG_P50 = 'nodejs_eventloop_lag_p50_seconds'
 const NODEJS_EVENTLOOP_LAG_P90 = 'nodejs_eventloop_lag_p90_seconds'
 const NODEJS_EVENTLOOP_LAG_P99 = 'nodejs_eventloop_lag_p99_seconds'
 
-module.exports = (meter, config = {}) => {
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
-
+module.exports = (meter, {prefix, labels, eventLoopMonitoringPrecision}) => {
   const histogram = perfHooks.monitorEventLoopDelay({
-    resolution: config.eventLoopMonitoringPrecision
+    resolution: eventLoopMonitoringPrecision
   })
+
   histogram.enable()
 
-  const lagMin = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_MIN, {
+  const lagMin = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_MIN, {
     description: 'The minimum recorded event loop delay.'
   })
-  const lagMax = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_MAX, {
+  const lagMax = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_MAX, {
     description: 'The maximum recorded event loop delay.'
   })
-  const lagMean = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_MEAN, {
+  const lagMean = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_MEAN, {
     description: 'The mean of the recorded event loop delays.'
   })
-  const lagStddev = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_STDDEV, {
+  const lagStddev = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_STDDEV, {
     description: 'The standard deviation of the recorded event loop delays.'
   })
-  const lagP50 = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_P50, {
+  const lagP50 = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_P50, {
     description: 'The 50th percentile of the recorded event loop delays.'
   })
-  const lagP90 = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_P90, {
+  const lagP90 = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_P90, {
     description: 'The 90th percentile of the recorded event loop delays.'
   })
-  const lagP99 = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG_P99, {
+  const lagP99 = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG_P99, {
     description: 'The 99th percentile of the recorded event loop delays.'
   })
 
-  const lag = meter.createValueObserver(namePrefix + NODEJS_EVENTLOOP_LAG, {
+  const lag = meter.createValueObserver(prefix + NODEJS_EVENTLOOP_LAG, {
     description: 'Lag of event loop in seconds.'
-    // TODO Fix that behavior
-    // aggregator: 'average',
   })
 
   function reportEventloopLag (start, observerBatchResult) {

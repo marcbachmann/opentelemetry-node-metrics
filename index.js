@@ -1,4 +1,8 @@
 module.exports = function setupNodeMetrics (meterProvider, config) {
+  config = config || {}
+  config.prefix = config.prefix ? config.prefix : ''
+  config.labels = config.labels ? config.labels : {}
+
   const meter = meterProvider.getMeter('opentelemetry-node-metrics')
   require('./metrics/eventLoopLag')(meter, config)
   require('./metrics/gc')(meter, config)

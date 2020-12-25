@@ -28,19 +28,16 @@ function structureOutput (input) {
   return returnValue
 }
 
-module.exports = (meter, config = {}) => {
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
-
-  const residentMemGauge = meter.createValueObserver(namePrefix + PROCESS_RESIDENT_MEMORY, {
+module.exports = (meter, {prefix, labels}) => {
+  const residentMemGauge = meter.createValueObserver(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
   })
 
-  const virtualMemGauge = meter.createValueObserver(namePrefix + PROCESS_VIRTUAL_MEMORY, {
+  const virtualMemGauge = meter.createValueObserver(prefix + PROCESS_VIRTUAL_MEMORY, {
     description: 'Virtual memory size in bytes.'
   })
 
-  const heapSizeMemGauge = meter.createValueObserver(namePrefix + PROCESS_HEAP, {
+  const heapSizeMemGauge = meter.createValueObserver(prefix + PROCESS_HEAP, {
     description: 'Process heap size in bytes.'
   })
 

@@ -10,23 +10,19 @@ kinds[perfHooks.constants.NODE_PERFORMANCE_GC_MINOR] = 'minor'
 kinds[perfHooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL] = 'incremental'
 kinds[perfHooks.constants.NODE_PERFORMANCE_GC_WEAKCB] = 'weakcb'
 
-module.exports = (meter, config = {}) => {
-  const namePrefix = config.prefix ? config.prefix : ''
-  const labels = config.labels ? config.labels : {}
-  const buckets = config.gcDurationBuckets
-    ? config.gcDurationBuckets
-    : DEFAULT_GC_DURATION_BUCKETS
+module.exports = (meter, {prefix, labels, gcDurationBuckets}) => {
+  const boundaries = gcDurationBuckets || DEFAULT_GC_DURATION_BUCKETS
 
-  const gcHistogram = meter.createValueRecorder(namePrefix + NODEJS_GC_DURATION_SECONDS, {
+  const gcHistogram = meter.createValueRecorder(prefix + NODEJS_GC_DURATION_SECONDS, {
     description: 'Garbage collection duration by kind, one of major, minor, incremental or weakcb.',
-    boundaries: buckets
+    boundaries
   })
 
   const obs = new perfHooks.PerformanceObserver(list => {
     const entry = list.getEntries()[0]
 
     gcHistogram
-      .bind({kind: kinds[entry.kind], ...labels})
+      .bind({...labels, kind: kinds[entry.kind]})
       // Convert duration from milliseconds to seconds
       .record(entry.duration / 1000)
   })
