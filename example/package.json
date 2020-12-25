@@ -1,0 +1,17 @@
+{
+  "name": "opentelemetry-node-metrics-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@opentelemetry/exporter-prometheus": "^0.14.0",
+    "@opentelemetry/metrics": "^0.14.0",
+    "opentelemetry-node-metrics": "file:.."
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
