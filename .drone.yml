@@ -1,0 +1,39 @@
+---
+kind: pipeline
+name: default
+
+clone:
+  depth: 50
+
+steps:
+- name: eslint
+  image: marcbachmann/eslint:7.14.0
+  when: {event: [push]}
+  depends_on: []
+  environment:
+    GH_TOKEN:
+      from_secret: gh_token
+
+- name: install
+  image: node:14-alpine
+  commands: ["npm ci"]
+
+- name: test
+  image: node:14-alpine
+  commands: ["npm run test -s"]
+
+- name: release
+  image: livingdocs/semantic-release:v1.0.0
+  environment:
+    GH_TOKEN:
+      from_secret: gh_token
+    NPM_TOKEN:
+      from_secret: npm_token
+
+trigger:
+  event: [push]
+---
+kind: signature
+hmac: de904653372d9c1d70c0e533a7e1a6275ea55e854b8d99d77a9dfc066326045d
+
+...
