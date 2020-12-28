@@ -6,24 +6,22 @@ const NODEJS_EXTERNAL_MEMORY = 'nodejs_external_memory_bytes'
 module.exports = (meter, {labels, prefix}) => {
   const heapSizeTotal = meter.createValueObserver(prefix + NODEJS_HEAP_SIZE_TOTAL, {
     description: 'Process heap size from Node.js in bytes.'
-  })
+  }).bind(labels)
 
   const heapSizeUsed = meter.createValueObserver(prefix + NODEJS_HEAP_SIZE_USED, {
     description: 'Process heap size used from Node.js in bytes.'
-  })
+  }).bind(labels)
 
   const externalMemUsed = meter.createValueObserver(prefix + NODEJS_EXTERNAL_MEMORY, {
     description: 'Node.js external memory size in bytes.'
-  })
+  }).bind(labels)
 
-  meter.createBatchObserver((observerBatchResult) => {
+  meter.createBatchObserver(() => {
     const memUsage = safeMemoryUsage()
     if (!memUsage) return
-    observerBatchResult.observe(labels, [
-      heapSizeTotal.observation(memUsage.heapTotal),
-      heapSizeUsed.observation(memUsage.heapUsed),
-      memUsage.external !== undefined ? externalMemUsed.observation(memUsage.external) : undefined
-    ])
+    heapSizeTotal.update(memUsage.heapTotal)
+    heapSizeUsed.update(memUsage.heapUsed)
+    if (memUsage.external !== undefined) externalMemUsed.update(memUsage.external)
   })
 }
 

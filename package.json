@@ -13,5 +13,6 @@
   "license": "Apache-2.0",
   "release": {
     "extends": "@livingdocs/semantic-release-presets/npm-github-verify"
-  }
+  },
+  "dependencies": {}
 }

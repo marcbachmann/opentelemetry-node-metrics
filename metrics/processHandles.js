@@ -8,22 +8,18 @@ module.exports = (meter, {prefix, labels}) => {
   if (typeof process._getActiveHandles !== 'function') return
 
   const aggregateByObjectName = createAggregatorByObjectName()
-  meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES, {
+  const activeHandlesMetric = meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES, {
     description: 'Number of active libuv handles grouped by handle type. Every handle type is C++ class name.' // eslint-disable-line max-len
-  }, (observerResult) => {
-    const handles = process._getActiveHandles()
-    const data = aggregateByObjectName(handles)
-    for (const [key, count] of data.entries()) {
-      observerResult.observe(count, {...labels, type: key})
-    }
+  }, () => {
+    aggregateByObjectName(activeHandlesMetric, labels, process._getActiveHandles())
   })
 
-  meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES_TOTAL, {
+  const boundTotalMetric = meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES_TOTAL, {
     description: 'Total number of active handles.'
-  }, (observerResult) => {
+  }, () => {
     const handles = process._getActiveHandles()
-    observerResult.observe(handles.length, labels)
-  })
+    boundTotalMetric.update(handles.length)
+  }).bind(labels)
 }
 
 module.exports.metricNames = [

@@ -3,14 +3,14 @@ const safeMemoryUsage = require('./helpers/safeMemoryUsage')
 const PROCESS_RESIDENT_MEMORY = 'process_resident_memory_bytes'
 
 function notLinuxVariant (meter, {prefix, labels}) {
-  meter.createValueObserver(prefix + PROCESS_RESIDENT_MEMORY, {
+  const boundMeter = meter.createValueObserver(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
-  }, (observerResult) => {
+  }, () => {
     const memUsage = safeMemoryUsage()
     // I don't think the other things returned from
     // `process.memoryUsage()` is relevant to a standard export
-    if (memUsage) observerResult.observe(memUsage.rss, labels)
-  })
+    if (memUsage) boundMeter.update(memUsage.rss)
+  }).bind(labels)
 }
 
 module.exports = process.platform === 'linux'
