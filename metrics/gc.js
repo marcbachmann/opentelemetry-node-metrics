@@ -21,7 +21,7 @@ module.exports = (meter, {prefix, labels, gcDurationBuckets}) => {
   const obs = new PerformanceObserver(list => {
     const entry = list.getEntries()[0]
     // Convert duration from milliseconds to seconds
-    kinds[entry.kind].record(entry.duration / 1000)
+    kinds[entry.detail ? entry.detail.kind : entry.kind].record(entry.duration / 1000)
   })
 
   // We do not expect too many gc events per second, so we do not use buffering
