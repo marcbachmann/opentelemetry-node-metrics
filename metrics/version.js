@@ -1,3 +1,4 @@
+'use strict'
 const NODE_VERSION_INFO = 'nodejs_version_info'
 
 module.exports = (meter, {prefix, labels}) => {

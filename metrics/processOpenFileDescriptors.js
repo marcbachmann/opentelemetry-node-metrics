@@ -1,3 +1,4 @@
+'use strict'
 const fs = require('fs')
 const process = require('process')
 const PROCESS_OPEN_FDS = 'process_open_fds'

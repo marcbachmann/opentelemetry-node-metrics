@@ -1,3 +1,4 @@
+'use strict'
 const startInSeconds = Math.round((Date.now() / 1000) - process.uptime())
 const PROCESS_START_TIME = 'process_start_time_seconds'
 

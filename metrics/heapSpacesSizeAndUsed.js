@@ -1,3 +1,4 @@
+'use strict'
 const v8 = require('v8')
 const METRICS = ['total', 'used', 'available']
 const NODEJS_HEAP_SIZE = {}

@@ -1,3 +1,4 @@
+'use strict'
 const linuxVariant = require('./osMemoryHeapLinux')
 const safeMemoryUsage = require('./helpers/safeMemoryUsage')
 const PROCESS_RESIDENT_MEMORY = 'process_resident_memory_bytes'

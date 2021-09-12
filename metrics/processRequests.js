@@ -1,3 +1,4 @@
+'use strict'
 const {createAggregatorByObjectName} = require('./helpers/processMetricsHelpers')
 
 const NODEJS_ACTIVE_REQUESTS = 'nodejs_active_requests'

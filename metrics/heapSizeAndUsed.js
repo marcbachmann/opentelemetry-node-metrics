@@ -1,3 +1,4 @@
+'use strict'
 const safeMemoryUsage = require('./helpers/safeMemoryUsage')
 const NODEJS_HEAP_SIZE_TOTAL = 'nodejs_heap_size_total_bytes'
 const NODEJS_HEAP_SIZE_USED = 'nodejs_heap_size_used_bytes'

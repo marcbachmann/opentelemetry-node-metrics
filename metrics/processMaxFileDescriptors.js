@@ -1,3 +1,4 @@
+'use strict'
 const fs = require('fs')
 const PROCESS_MAX_FDS = 'process_max_fds'
 let maxFds

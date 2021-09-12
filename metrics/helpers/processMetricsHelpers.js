@@ -1,3 +1,4 @@
+'use strict'
 function createAggregatorByObjectName () {
   const all = new Map()
   return function aggregateByObjectName (metric, labels, list) {
