@@ -6,7 +6,7 @@ const PROCESS_OPEN_FDS = 'process_open_fds'
 module.exports = (meter, {prefix, labels}) => {
   if (process.platform !== 'linux') return
 
-  const boundInstrument = meter.createValueObserver(prefix + PROCESS_OPEN_FDS, {
+  const boundInstrument = meter.createObservableGauge(prefix + PROCESS_OPEN_FDS, {
     description: 'Number of open file descriptors.'
   }, () => {
     try {

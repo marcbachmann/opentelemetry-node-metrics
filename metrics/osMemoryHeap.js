@@ -4,7 +4,7 @@ const safeMemoryUsage = require('./helpers/safeMemoryUsage')
 const PROCESS_RESIDENT_MEMORY = 'process_resident_memory_bytes'
 
 function notLinuxVariant (meter, {prefix, labels}) {
-  const boundMeter = meter.createValueObserver(prefix + PROCESS_RESIDENT_MEMORY, {
+  const boundMeter = meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
   }, () => {
     const memUsage = safeMemoryUsage()

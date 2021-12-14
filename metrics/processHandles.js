@@ -9,13 +9,13 @@ module.exports = (meter, {prefix, labels}) => {
   if (typeof process._getActiveHandles !== 'function') return
 
   const aggregateByObjectName = createAggregatorByObjectName()
-  const activeHandlesMetric = meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES, {
+  const activeHandlesMetric = meter.createObservableGauge(prefix + NODEJS_ACTIVE_HANDLES, {
     description: 'Number of active libuv handles grouped by handle type. Every handle type is C++ class name.' // eslint-disable-line max-len
   }, () => {
     aggregateByObjectName(activeHandlesMetric, labels, process._getActiveHandles())
   })
 
-  const boundTotalMetric = meter.createValueObserver(prefix + NODEJS_ACTIVE_HANDLES_TOTAL, {
+  const boundTotalMetric = meter.createObservableGauge(prefix + NODEJS_ACTIVE_HANDLES_TOTAL, {
     description: 'Total number of active handles.'
   }, () => {
     const handles = process._getActiveHandles()
