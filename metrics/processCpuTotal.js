@@ -16,9 +16,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   const cpuUsageCounter = meter.createCounter(prefix + PROCESS_CPU_SECONDS, {
     description: 'Total user and system CPU time spent in seconds.'
-  }).bind(labels)
-
-  meter.createBatchObserver(() => {
+  }, () => {
     const cpuUsage = process.cpuUsage()
     const userUsageMicros = cpuUsage.user - lastCpuUsage.user
     const systemUsageMicros = cpuUsage.system - lastCpuUsage.system
@@ -27,7 +25,7 @@ module.exports = (meter, {prefix, labels}) => {
     cpuUserUsageCounter.add(userUsageMicros / 1e6)
     cpuSystemUsageCounter.add(systemUsageMicros / 1e6)
     cpuUsageCounter.add((userUsageMicros + systemUsageMicros) / 1e6)
-  })
+  }).bind(labels)
 }
 
 module.exports.metricNames = [

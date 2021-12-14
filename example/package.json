@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@opentelemetry/exporter-prometheus": "^0.14.0",
-    "@opentelemetry/metrics": "^0.14.0",
+    "@opentelemetry/exporter-prometheus": "^0.27.0",
+    "@opentelemetry/sdk-metrics-base": "^0.27.0",
     "opentelemetry-node-metrics": "file:.."
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

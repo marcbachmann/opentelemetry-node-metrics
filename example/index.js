@@ -1,7 +1,7 @@
-const {MeterProvider} = require('@opentelemetry/metrics')
+const {MeterProvider} = require('@opentelemetry/sdk-metrics-base')
 const {PrometheusExporter} = require('@opentelemetry/exporter-prometheus')
 
-const exporter = new PrometheusExporter({startServer: true}, () => {
+const exporter = new PrometheusExporter({port: 9464, startServer: true}, () => {
   // eslint-disable-next-line no-console
   console.log(
     `Prometheus scrape endpoint: http://localhost:%s%s`,
@@ -16,3 +16,8 @@ const meterProvider = new MeterProvider({
 })
 
 require('opentelemetry-node-metrics')(meterProvider)
+
+
+// With opentelemetry 0.27, the proecss somehow doesn't keep any open handles
+// and stops without that
+setInterval(() => {}, 1000)

@@ -7,7 +7,7 @@ const DEFAULT_GC_DURATION_BUCKETS = [0.001, 0.01, 0.1, 1, 2, 5]
 module.exports = (meter, {prefix, labels, gcDurationBuckets}) => {
   const boundaries = gcDurationBuckets || DEFAULT_GC_DURATION_BUCKETS
 
-  const histogram = meter.createValueRecorder(prefix + NODEJS_GC_DURATION_SECONDS, {
+  const histogram = meter.createHistogram(prefix + NODEJS_GC_DURATION_SECONDS, {
     description: 'Garbage collection duration by kind, one of major, minor, incremental or weakcb.',
     boundaries
   })

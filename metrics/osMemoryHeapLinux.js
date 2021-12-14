@@ -29,19 +29,17 @@ function structureOutput (input) {
 }
 
 module.exports = (meter, {prefix, labels}) => {
-  const residentMemGauge = meter.createValueObserver(prefix + PROCESS_RESIDENT_MEMORY, {
+  const residentMemGauge = meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
   }).bind(labels)
 
-  const virtualMemGauge = meter.createValueObserver(prefix + PROCESS_VIRTUAL_MEMORY, {
+  const virtualMemGauge = meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, {
     description: 'Virtual memory size in bytes.'
   }).bind(labels)
 
-  const heapSizeMemGauge = meter.createValueObserver(prefix + PROCESS_HEAP, {
+  const heapSizeMemGauge = meter.createObservableGauge(prefix + PROCESS_HEAP, {
     description: 'Process heap size in bytes.'
-  }).bind(labels)
-
-  meter.createBatchObserver(() => {
+  }, () => {
     try {
       // Sync I/O is often problematic, but /proc isn't really I/O, it
       // a virtual filesystem that maps directly to in-kernel data
@@ -58,7 +56,7 @@ module.exports = (meter, {prefix, labels}) => {
     } catch {
       // noop
     }
-  })
+  }).bind(labels)
 }
 
 module.exports.metricNames = [
