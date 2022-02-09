@@ -13,15 +13,15 @@ module.exports = (meter, {prefix, labels, gcDurationBuckets}) => {
   })
 
   const kinds = {}
-  kinds[constants.NODE_PERFORMANCE_GC_MAJOR] = histogram.bind({...labels, kind: 'major'})
-  kinds[constants.NODE_PERFORMANCE_GC_MINOR] = histogram.bind({...labels, kind: 'minor'})
-  kinds[constants.NODE_PERFORMANCE_GC_INCREMENTAL] = histogram.bind({...labels, kind: 'incremental'}) // eslint-disable-line max-len
-  kinds[constants.NODE_PERFORMANCE_GC_WEAKCB] = histogram.bind({...labels, kind: 'weakcb'})
+  kinds[constants.NODE_PERFORMANCE_GC_MAJOR] = {...labels, kind: 'major'}
+  kinds[constants.NODE_PERFORMANCE_GC_MINOR] = {...labels, kind: 'minor'}
+  kinds[constants.NODE_PERFORMANCE_GC_INCREMENTAL] = {...labels, kind: 'incremental'}
+  kinds[constants.NODE_PERFORMANCE_GC_WEAKCB] = {...labels, kind: 'weakcb'}
 
-  const obs = new PerformanceObserver(list => {
+  const obs = new PerformanceObserver((list) => {
     const entry = list.getEntries()[0]
     // Convert duration from milliseconds to seconds
-    kinds[entry.detail ? entry.detail.kind : entry.kind].record(entry.duration / 1000)
+    histogram.record(entry.duration / 1000, kinds[entry.detail ? entry.detail.kind : entry.kind])
   })
 
   // We do not expect too many gc events per second, so we do not use buffering

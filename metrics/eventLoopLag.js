@@ -20,55 +20,57 @@ module.exports = (meter, {prefix, labels, eventLoopMonitoringPrecision}) => {
 
   histogram.enable()
 
-  const lag = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG, {
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG, {
     description: 'Lag of event loop in seconds.'
-  }).bind(labels)
-
-  const lagMin = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MIN, {
-    description: 'The minimum recorded event loop delay.'
-  }).bind(labels)
-
-  const lagMax = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MAX, {
-    description: 'The maximum recorded event loop delay.'
-  }).bind(labels)
-
-  const lagMean = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MEAN, {
-    description: 'The mean of the recorded event loop delays.'
-  }).bind(labels)
-
-  const lagStddev = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_STDDEV, {
-    description: 'The standard deviation of the recorded event loop delays.'
-  }).bind(labels)
-
-  const lagP50 = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P50, {
-    description: 'The 50th percentile of the recorded event loop delays.'
-  }).bind(labels)
-
-  const lagP90 = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P90, {
-    description: 'The 90th percentile of the recorded event loop delays.'
-  }).bind(labels)
-
-  const lagP99 = meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P99, {
-    description: 'The 99th percentile of the recorded event loop delays.'
-  }, async () => {
+  }, async (observable) => {
     const startTime = process.hrtime()
     await new Promise((resolve) => setImmediate(() => resolve()))
-
     const delta = process.hrtime(startTime)
-    const nanosec = (delta[0] * 1e9) + delta[1]
-    const seconds = nanosec / 1e9
-    lag.update(seconds)
+    const seconds = (delta[0]) + (delta[1] / 1e9)
+    observable.observe(seconds, labels)
+  })
 
-    lagMin.update(histogram.min / 1e9)
-    lagMax.update(histogram.max / 1e9)
-    lagMean.update(histogram.mean / 1e9)
-    lagStddev.update(histogram.stddev / 1e9)
-    lagP50.update(histogram.percentile(50) / 1e9)
-    lagP90.update(histogram.percentile(90) / 1e9)
-    lagP99.update(histogram.percentile(99) / 1e9)
-  }).bind(labels)
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MIN, {
+    description: 'The minimum recorded event loop delay.'
+  }, (observable) => {
+    observable.observe(histogram.min / 1e9, labels)
+  })
 
-  lag.update(0)
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MAX, {
+    description: 'The maximum recorded event loop delay.'
+  }, (observable) => {
+    observable.observe(histogram.max / 1e9, labels)
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_MEAN, {
+    description: 'The mean of the recorded event loop delays.'
+  }, (observable) => {
+    observable.observe(histogram.mean / 1e9, labels)
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_STDDEV, {
+    description: 'The standard deviation of the recorded event loop delays.'
+  }, (observable) => {
+    observable.observe(histogram.stddev / 1e9, labels)
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P50, {
+    description: 'The 50th percentile of the recorded event loop delays.'
+  }, (observable) => {
+    observable.observe(histogram.percentile(50) / 1e9, labels)
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P90, {
+    description: 'The 90th percentile of the recorded event loop delays.'
+  }, (observable) => {
+    observable.observe(histogram.percentile(90) / 1e9, labels)
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_EVENTLOOP_LAG_P99, {
+    description: 'The 99th percentile of the recorded event loop delays.'
+  }, (observable) => {
+    observable.observe(histogram.percentile(99) / 1e9, labels)
+  })
 }
 
 module.exports.metricNames = [

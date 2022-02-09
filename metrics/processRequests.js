@@ -9,17 +9,17 @@ module.exports = (meter, {prefix, labels}) => {
   if (typeof process._getActiveRequests !== 'function') return
 
   const aggregateByObjectName = createAggregatorByObjectName()
-  const activeRequestsMetric = meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS, {
+  meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS, {
     description: 'Number of active libuv requests grouped by request type. Every request type is C++ class name.' // eslint-disable-line max-len
-  }, () => {
-    aggregateByObjectName(activeRequestsMetric, labels, process._getActiveRequests())
+  }, (observable) => {
+    aggregateByObjectName(observable, labels, process._getActiveRequests())
   })
 
-  const boundTotalRequests = meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS_TOTAL, {
+  meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS_TOTAL, {
     description: 'Total number of active requests.'
-  }, () => {
-    boundTotalRequests.update(process._getActiveRequests().length)
-  }).bind(labels)
+  }, (observable) => {
+    observable.observe(process._getActiveRequests().length, labels)
+  })
 }
 
 module.exports.metricNames = [

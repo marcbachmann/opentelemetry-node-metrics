@@ -8,35 +8,57 @@ for (const metricType of METRICS) {
 }
 
 module.exports = (meter, {prefix, labels}) => {
-  const boundMetricsBySpace = {}
+  const labelsBySpace = {}
+  let stats
+  function getStats () {
+    if (stats !== undefined) return stats
+    stats = v8.getHeapSpaceStatistics()
+      .map((space) => {
+        const spaceLabels = labelsBySpace[space.space_name] || (function () {
+          const spaceName = space.space_name.replace(/_space$/, '')
+          labelsBySpace[space.space_name] = {
+            total: {...labels, space: spaceName},
+            used: {...labels, space: spaceName},
+            available: {...labels, space: spaceName}
+          }
+          return labelsBySpace[space.space_name]
+        })()
 
-  const total = meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.total, {
-    description: `Process heap space size total from Node.js in bytes.`
-  })
-
-  const used = meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.used, {
-    description: `Process heap space size used from Node.js in bytes.`
-  })
-
-  const available = meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.available, {
-    description: `Process heap space size available from Node.js in bytes.`
-  }, () => {
-    for (const space of v8.getHeapSpaceStatistics()) {
-      let bound = boundMetricsBySpace[space.space_name]
-      if (!bound) {
-        const spaceName = space.space_name.substr(0, space.space_name.indexOf('_space'))
-        boundMetricsBySpace[space.space_name] = {
-          total: total.bind({...labels, space: spaceName}),
-          used: used.bind({...labels, space: spaceName}),
-          available: available.bind({...labels, space: spaceName})
+        return {
+          total: {value: space.space_size, labels: spaceLabels.total},
+          used: {value: space.space_used_size, labels: spaceLabels.used},
+          available: {value: space.space_available_size, labels: spaceLabels.available}
         }
+      })
 
-        bound = boundMetricsBySpace[space.space_name]
-      }
+    setTimeout(() => { stats = undefined }, 1000).unref()
+    return stats
+  }
 
-      bound.total.update(space.space_size)
-      bound.used.update(space.space_used_size)
-      bound.available.update(space.space_available_size)
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.total, {
+    description: `Process heap space size total from Node.js in bytes.`
+  }, (observable) => {
+    if (!getStats()) return
+    for (let i = 0; i < stats.length; i++) {
+      observable.observe(stats[i].total.value, stats[i].total.labels)
+    }
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.used, {
+    description: `Process heap space size used from Node.js in bytes.`
+  }, (observable) => {
+    if (!getStats()) return
+    for (let i = 0; i < stats.length; i++) {
+      observable.observe(stats[i].used.value, stats[i].used.labels)
+    }
+  })
+
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.available, {
+    description: `Process heap space size available from Node.js in bytes.`
+  }, (observable) => {
+    if (!getStats()) return
+    for (let i = 0; i < stats.length; i++) {
+      observable.observe(stats[i].available.value, stats[i].available.labels)
     }
   })
 }

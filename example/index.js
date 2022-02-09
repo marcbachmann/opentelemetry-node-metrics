@@ -12,7 +12,7 @@ const exporter = new PrometheusExporter({port: 9464, startServer: true}, () => {
 
 const meterProvider = new MeterProvider({
   exporter,
-  interval: 2000
+  interval: 5000
 })
 
 require('opentelemetry-node-metrics')(meterProvider)

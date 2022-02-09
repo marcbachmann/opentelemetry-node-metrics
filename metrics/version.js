@@ -14,7 +14,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createUpDownCounter(prefix + NODE_VERSION_INFO, {
     description: 'Node.js version info.'
-  }).bind(version).add(1)
+  }).add(1, version)
 }
 
 module.exports.metricNames = [NODE_VERSION_INFO]
