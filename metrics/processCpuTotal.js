@@ -8,24 +8,27 @@ module.exports = (meter, {prefix, labels}) => {
 
   const cpuUserUsageCounter = meter.createCounter(prefix + PROCESS_CPU_USER_SECONDS, {
     description: 'Total user CPU time spent in seconds.'
-  }).bind(labels)
+  })
 
   const cpuSystemUsageCounter = meter.createCounter(prefix + PROCESS_CPU_SYSTEM_SECONDS, {
     description: 'Total system CPU time spent in seconds.'
-  }).bind(labels)
+  })
 
-  const cpuUsageCounter = meter.createCounter(prefix + PROCESS_CPU_SECONDS, {
+  meter.createObservableCounter(prefix + PROCESS_CPU_SECONDS, {
     description: 'Total user and system CPU time spent in seconds.'
-  }, () => {
+  }, (cpuUsageCounter) => {
     const cpuUsage = process.cpuUsage()
-    const userUsageMicros = cpuUsage.user - lastCpuUsage.user
-    const systemUsageMicros = cpuUsage.system - lastCpuUsage.system
+    const userUsageSecs = (cpuUsage.user - lastCpuUsage.user) / 1e6
+    const systemUsageSecs = (cpuUsage.system - lastCpuUsage.system) / 1e6
     lastCpuUsage = cpuUsage
 
-    cpuUserUsageCounter.add(userUsageMicros / 1e6)
-    cpuSystemUsageCounter.add(systemUsageMicros / 1e6)
-    cpuUsageCounter.add((userUsageMicros + systemUsageMicros) / 1e6)
-  }).bind(labels)
+    cpuUserUsageCounter.add(userUsageSecs, labels)
+    cpuSystemUsageCounter.add(systemUsageSecs, labels)
+    cpuUsageCounter.observe((cpuUsage.user + cpuUsage.system) / 1e6, labels)
+  })
+
+  cpuUserUsageCounter.add(lastCpuUsage.user / 1e6, labels)
+  cpuSystemUsageCounter.add(lastCpuUsage.system / 1e6, labels)
 }
 
 module.exports.metricNames = [

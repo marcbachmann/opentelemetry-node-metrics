@@ -12,9 +12,9 @@ function createAggregatorByObjectName () {
     }
 
     for (const [key, value] of current) {
-      const instrument = all.get(key) || metric.bind({...labels, type: key})
-      instrument.update(value)
-      all.set(key, instrument)
+      const metricLabels = all.get(key) || {...labels, type: key}
+      metric.observe(value, metricLabels)
+      all.set(key, metricLabels)
     }
   }
 }

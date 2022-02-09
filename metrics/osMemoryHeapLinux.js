@@ -29,34 +29,40 @@ function structureOutput (input) {
 }
 
 module.exports = (meter, {prefix, labels}) => {
-  const residentMemGauge = meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
-    description: 'Resident memory size in bytes.'
-  }).bind(labels)
+  let stats
+  function getStats () {
+    if (stats !== undefined) return stats
 
-  const virtualMemGauge = meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, {
-    description: 'Virtual memory size in bytes.'
-  }).bind(labels)
-
-  const heapSizeMemGauge = meter.createObservableGauge(prefix + PROCESS_HEAP, {
-    description: 'Process heap size in bytes.'
-  }, () => {
     try {
-      // Sync I/O is often problematic, but /proc isn't really I/O, it
-      // a virtual filesystem that maps directly to in-kernel data
-      // structures and never blocks.
-      //
-      // Node.js/libuv do this already for process.memoryUsage(), see:
-      // - https://github.com/libuv/libuv/blob/a629688008694ed8022269e66826d4d6ec688b83/src/unix/linux-core.c#L506-L523
       const stat = fs.readFileSync('/proc/self/status', 'utf8')
-      const structuredOutput = structureOutput(stat)
-
-      residentMemGauge.update(structuredOutput.VmRSS)
-      virtualMemGauge.update(structuredOutput.VmSize)
-      heapSizeMemGauge.update(structuredOutput.VmData)
+      stats = structureOutput(stat)
     } catch {
-      // noop
+      stats = false
     }
-  }).bind(labels)
+    setTimeout(() => { stats = undefined }, 1000).unref()
+    return stats
+  }
+
+  meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
+    description: 'Resident memory size in bytes.'
+  }, (observable) => {
+    if (!getStats()) return
+    observable.observe(stats.VmRSS, labels)
+  })
+
+  meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, {
+    description: 'Virtual memory size in bytes.'
+  }, (observable) => {
+    if (!getStats()) return
+    observable.observe(stats.VmSize, labels)
+  })
+
+  meter.createObservableGauge(prefix + PROCESS_HEAP, {
+    description: 'Process heap size in bytes.'
+  }, (observable) => {
+    if (!getStats()) return
+    observable.observe(stats.VmData, labels)
+  })
 }
 
 module.exports.metricNames = [

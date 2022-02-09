@@ -1,19 +1,9 @@
 module.exports = function setupNodeMetrics (meterProvider, config) {
-  config = config || {}
-  config.prefix = config.prefix ? config.prefix : ''
-  config.labels = config.labels ? config.labels : {}
+  config = config ? {...config} : {}
+  config.prefix = config.prefix || ''
+  config.labels = config.labels || {}
 
-  let meter = meterProvider.getMeter('opentelemetry-node-metrics')
-
-  // keep opentelemetry compatibility with v0.24.x
-  if (!meter.createObservableGauge) {
-    meter = {
-      createObservableGauge: meter.createValueObserver.bind(meter),
-      createHistogram: meter.createValueRecorder.bind(meter),
-      createCounter: meter.createCounter.bind(meter),
-      createUpDownCounter: meter.createUpDownCounter.bind(meter)
-    }
-  }
+  const meter = meterProvider.getMeter('opentelemetry-node-metrics')
 
   require('./metrics/version')(meter, config)
   require('./metrics/processStartTime')(meter, config)

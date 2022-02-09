@@ -25,7 +25,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createUpDownCounter(prefix + PROCESS_MAX_FDS, {
     description: 'Maximum number of open file descriptors.'
-  }).bind(labels).add(maxFds)
+  }).add(maxFds, labels)
 }
 
 module.exports.metricNames = [PROCESS_MAX_FDS]

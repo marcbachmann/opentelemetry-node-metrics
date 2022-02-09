@@ -6,18 +6,18 @@ const PROCESS_OPEN_FDS = 'process_open_fds'
 module.exports = (meter, {prefix, labels}) => {
   if (process.platform !== 'linux') return
 
-  const boundInstrument = meter.createObservableGauge(prefix + PROCESS_OPEN_FDS, {
+  meter.createObservableGauge(prefix + PROCESS_OPEN_FDS, {
     description: 'Number of open file descriptors.'
-  }, () => {
+  }, (observable) => {
     try {
       const fds = fs.readdirSync('/proc/self/fd')
       // Minus 1 to not count the fd that was used by readdirSync(),
       // it's now closed.
-      boundInstrument.update(fds.length - 1)
+      observable.observe(fds.length - 1, labels)
     } catch {
       // noop
     }
-  }).bind(labels)
+  })
 }
 
 module.exports.metricNames = [PROCESS_OPEN_FDS]
