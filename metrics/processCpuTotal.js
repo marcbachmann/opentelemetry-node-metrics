@@ -3,6 +3,10 @@ const PROCESS_CPU_USER_SECONDS = 'process_cpu_user_seconds_total'
 const PROCESS_CPU_SYSTEM_SECONDS = 'process_cpu_system_seconds_total'
 const PROCESS_CPU_SECONDS = 'process_cpu_seconds_total'
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {prefix, labels}) => {
   let lastCpuUsage = process.cpuUsage()
 
@@ -14,9 +18,7 @@ module.exports = (meter, {prefix, labels}) => {
     description: 'Total system CPU time spent in seconds.'
   })
 
-  meter.createObservableCounter(prefix + PROCESS_CPU_SECONDS, {
-    description: 'Total user and system CPU time spent in seconds.'
-  }, (cpuUsageCounter) => {
+  meter.createObservableCounter(prefix + PROCESS_CPU_SECONDS, (cpuUsageCounter) => {
     const cpuUsage = process.cpuUsage()
     const userUsageSecs = (cpuUsage.user - lastCpuUsage.user) / 1e6
     const systemUsageSecs = (cpuUsage.system - lastCpuUsage.system) / 1e6
@@ -25,6 +27,8 @@ module.exports = (meter, {prefix, labels}) => {
     cpuUserUsageCounter.add(userUsageSecs, labels)
     cpuSystemUsageCounter.add(systemUsageSecs, labels)
     cpuUsageCounter.observe((cpuUsage.user + cpuUsage.system) / 1e6, labels)
+  }, {
+    description: 'Total user and system CPU time spent in seconds.'
   })
 
   cpuUserUsageCounter.add(lastCpuUsage.user / 1e6, labels)

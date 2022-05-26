@@ -28,6 +28,10 @@ function structureOutput (input) {
   return returnValue
 }
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {prefix, labels}) => {
   let stats
   function getStats () {
@@ -43,25 +47,25 @@ module.exports = (meter, {prefix, labels}) => {
     return stats
   }
 
-  meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
-    description: 'Resident memory size in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, (observable) => {
     if (!getStats()) return
     observable.observe(stats.VmRSS, labels)
+  }, {
+    description: 'Resident memory size in bytes.'
   })
 
-  meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, {
-    description: 'Virtual memory size in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, (observable) => {
     if (!getStats()) return
     observable.observe(stats.VmSize, labels)
+  }, {
+    description: 'Virtual memory size in bytes.'
   })
 
-  meter.createObservableGauge(prefix + PROCESS_HEAP, {
-    description: 'Process heap size in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + PROCESS_HEAP, (observable) => {
     if (!getStats()) return
     observable.observe(stats.VmData, labels)
+  }, {
+    description: 'Process heap size in bytes.'
   })
 }
 

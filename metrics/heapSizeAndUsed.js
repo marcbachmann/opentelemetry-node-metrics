@@ -4,6 +4,10 @@ const NODEJS_HEAP_SIZE_TOTAL = 'nodejs_heap_size_total_bytes'
 const NODEJS_HEAP_SIZE_USED = 'nodejs_heap_size_used_bytes'
 const NODEJS_EXTERNAL_MEMORY = 'nodejs_external_memory_bytes'
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {labels, prefix}) => {
   let stats
   function getStats () {
@@ -13,26 +17,26 @@ module.exports = (meter, {labels, prefix}) => {
     return stats
   }
 
-  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_TOTAL, {
-    description: 'Process heap size from Node.js in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_TOTAL, (observable) => {
     if (!getStats()) return
     observable.observe(stats.heapTotal, labels)
+  }, {
+    description: 'Process heap size from Node.js in bytes.'
   })
 
-  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_USED, {
-    description: 'Process heap size used from Node.js in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_USED, (observable) => {
     if (!getStats()) return
     observable.observe(stats.heapUsed, labels)
+  }, {
+    description: 'Process heap size used from Node.js in bytes.'
   })
 
-  meter.createObservableGauge(prefix + NODEJS_EXTERNAL_MEMORY, {
-    description: 'Node.js external memory size in bytes.'
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_EXTERNAL_MEMORY, (observable) => {
     if (!getStats()) return
     if (stats.external === undefined) return
     observable.observe(stats.external, labels)
+  }, {
+    description: 'Node.js external memory size in bytes.'
   })
 }
 

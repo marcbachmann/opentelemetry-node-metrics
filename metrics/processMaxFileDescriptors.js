@@ -3,6 +3,10 @@ const fs = require('fs')
 const PROCESS_MAX_FDS = 'process_max_fds'
 let maxFds
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {prefix, labels}) => {
   if (maxFds === undefined) {
     // This will fail if a linux-like procfs is not available.

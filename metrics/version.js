@@ -1,6 +1,10 @@
 'use strict'
 const NODE_VERSION_INFO = 'nodejs_version_info'
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {prefix, labels}) => {
   const versionSegments = process.version.slice(1).split('.').map(Number)
 

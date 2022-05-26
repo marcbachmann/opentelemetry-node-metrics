@@ -7,6 +7,10 @@ for (const metricType of METRICS) {
   NODEJS_HEAP_SIZE[metricType] = `nodejs_heap_space_size_${metricType}_bytes`
 }
 
+/**
+ * @param {import('@opentelemetry/api-metrics').Meter} meter 
+ * @param {*} config 
+ */
 module.exports = (meter, {prefix, labels}) => {
   const labelsBySpace = {}
   let stats
@@ -35,31 +39,31 @@ module.exports = (meter, {prefix, labels}) => {
     return stats
   }
 
-  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.total, {
-    description: `Process heap space size total from Node.js in bytes.`
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.total, (observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].total.value, stats[i].total.labels)
     }
+  }, {
+    description: `Process heap space size total from Node.js in bytes.`
   })
 
-  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.used, {
-    description: `Process heap space size used from Node.js in bytes.`
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.used, (observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].used.value, stats[i].used.labels)
     }
+  }, {
+    description: `Process heap space size used from Node.js in bytes.`
   })
 
-  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.available, {
-    description: `Process heap space size available from Node.js in bytes.`
-  }, (observable) => {
+  meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.available, (observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].available.value, stats[i].available.labels)
     }
+  }, {
+    description: `Process heap space size available from Node.js in bytes.`
   })
 }
 

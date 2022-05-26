@@ -1,3 +1,7 @@
+/**
+ * @param {import('@opentelemetry/sdk-metrics-base').MeterProvider} meterProvider 
+ * @param {*} config 
+ */
 module.exports = function setupNodeMetrics (meterProvider, config) {
   config = config ? {...config} : {}
   config.prefix = config.prefix || ''
