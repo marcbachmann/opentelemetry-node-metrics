@@ -1,4 +1,4 @@
-const {MeterProvider} = require('@opentelemetry/sdk-metrics-base')
+const {MeterProvider} = require('@opentelemetry/sdk-metrics')
 const {PrometheusExporter} = require('@opentelemetry/exporter-prometheus')
 
 const meterProvider = new MeterProvider({})
