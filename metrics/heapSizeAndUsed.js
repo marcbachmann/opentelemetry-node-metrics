@@ -15,21 +15,21 @@ module.exports = (meter, {labels, prefix}) => {
 
   meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_TOTAL, {
     description: 'Process heap size from Node.js in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     observable.observe(stats.heapTotal, labels)
   })
 
   meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE_USED, {
     description: 'Process heap size used from Node.js in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     observable.observe(stats.heapUsed, labels)
   })
 
   meter.createObservableGauge(prefix + NODEJS_EXTERNAL_MEMORY, {
     description: 'Node.js external memory size in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     if (stats.external === undefined) return
     observable.observe(stats.external, labels)

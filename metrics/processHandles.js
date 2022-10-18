@@ -11,13 +11,13 @@ module.exports = (meter, {prefix, labels}) => {
   const aggregateByObjectName = createAggregatorByObjectName()
   meter.createObservableGauge(prefix + NODEJS_ACTIVE_HANDLES, {
     description: 'Number of active libuv handles grouped by handle type. Every handle type is C++ class name.' // eslint-disable-line max-len
-  }, (observable) => {
+  }).addCallback((observable) => {
     aggregateByObjectName(observable, labels, process._getActiveHandles())
   })
 
   meter.createObservableGauge(prefix + NODEJS_ACTIVE_HANDLES_TOTAL, {
     description: 'Total number of active handles.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     const handles = process._getActiveHandles()
     observable.observe(handles.length, labels)
   })

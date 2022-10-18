@@ -14,7 +14,6 @@
   "release": {
     "extends": "@livingdocs/semantic-release-presets/npm-github-verify"
   },
-  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marcbachmann/opentelemetry-node-metrics.git"

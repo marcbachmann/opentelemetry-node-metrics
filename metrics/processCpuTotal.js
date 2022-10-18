@@ -16,7 +16,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableCounter(prefix + PROCESS_CPU_SECONDS, {
     description: 'Total user and system CPU time spent in seconds.'
-  }, (cpuUsageCounter) => {
+  }).addCallback((observable) => {
     const cpuUsage = process.cpuUsage()
     const userUsageSecs = (cpuUsage.user - lastCpuUsage.user) / 1e6
     const systemUsageSecs = (cpuUsage.system - lastCpuUsage.system) / 1e6
@@ -24,7 +24,7 @@ module.exports = (meter, {prefix, labels}) => {
 
     cpuUserUsageCounter.add(userUsageSecs, labels)
     cpuSystemUsageCounter.add(systemUsageSecs, labels)
-    cpuUsageCounter.observe((cpuUsage.user + cpuUsage.system) / 1e6, labels)
+    observable.observe((cpuUsage.user + cpuUsage.system) / 1e6, labels)
   })
 
   cpuUserUsageCounter.add(lastCpuUsage.user / 1e6, labels)

@@ -6,7 +6,7 @@ const PROCESS_RESIDENT_MEMORY = 'process_resident_memory_bytes'
 function notLinuxVariant (meter, {prefix, labels}) {
   meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     const memUsage = safeMemoryUsage()
     // I don't think the other things returned from
     // `process.memoryUsage()` is relevant to a standard export

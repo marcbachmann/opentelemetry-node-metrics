@@ -45,21 +45,21 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableGauge(prefix + PROCESS_RESIDENT_MEMORY, {
     description: 'Resident memory size in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     observable.observe(stats.VmRSS, labels)
   })
 
   meter.createObservableGauge(prefix + PROCESS_VIRTUAL_MEMORY, {
     description: 'Virtual memory size in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     observable.observe(stats.VmSize, labels)
   })
 
   meter.createObservableGauge(prefix + PROCESS_HEAP, {
     description: 'Process heap size in bytes.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     observable.observe(stats.VmData, labels)
   })

@@ -8,7 +8,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableGauge(prefix + PROCESS_OPEN_FDS, {
     description: 'Number of open file descriptors.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     try {
       const fds = fs.readdirSync('/proc/self/fd')
       // Minus 1 to not count the fd that was used by readdirSync(),

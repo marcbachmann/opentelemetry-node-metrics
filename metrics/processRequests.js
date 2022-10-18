@@ -11,13 +11,13 @@ module.exports = (meter, {prefix, labels}) => {
   const aggregateByObjectName = createAggregatorByObjectName()
   meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS, {
     description: 'Number of active libuv requests grouped by request type. Every request type is C++ class name.' // eslint-disable-line max-len
-  }, (observable) => {
+  }).addCallback((observable) => {
     aggregateByObjectName(observable, labels, process._getActiveRequests())
   })
 
   meter.createObservableGauge(prefix + NODEJS_ACTIVE_REQUESTS_TOTAL, {
     description: 'Total number of active requests.'
-  }, (observable) => {
+  }).addCallback((observable) => {
     observable.observe(process._getActiveRequests().length, labels)
   })
 }

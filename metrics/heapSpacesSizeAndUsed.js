@@ -37,7 +37,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.total, {
     description: `Process heap space size total from Node.js in bytes.`
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].total.value, stats[i].total.labels)
@@ -46,7 +46,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.used, {
     description: `Process heap space size used from Node.js in bytes.`
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].used.value, stats[i].used.labels)
@@ -55,7 +55,7 @@ module.exports = (meter, {prefix, labels}) => {
 
   meter.createObservableGauge(prefix + NODEJS_HEAP_SIZE.available, {
     description: `Process heap space size available from Node.js in bytes.`
-  }, (observable) => {
+  }).addCallback((observable) => {
     if (!getStats()) return
     for (let i = 0; i < stats.length; i++) {
       observable.observe(stats[i].available.value, stats[i].available.labels)
