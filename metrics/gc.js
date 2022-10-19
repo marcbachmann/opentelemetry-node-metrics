@@ -1,15 +1,10 @@
 'use strict'
 const {PerformanceObserver, constants} = require('perf_hooks')
-
 const NODEJS_GC_DURATION_SECONDS = 'nodejs_gc_duration_seconds'
-const DEFAULT_GC_DURATION_BUCKETS = [0.001, 0.01, 0.1, 1, 2, 5]
 
-module.exports = (meter, {prefix, labels, gcDurationBuckets}) => {
-  const boundaries = gcDurationBuckets || DEFAULT_GC_DURATION_BUCKETS
-
+module.exports = (meter, {prefix, labels}) => {
   const histogram = meter.createHistogram(prefix + NODEJS_GC_DURATION_SECONDS, {
-    description: 'Garbage collection duration by kind, one of major, minor, incremental or weakcb.',
-    boundaries
+    description: 'Garbage collection duration by kind, one of major, minor, incremental or weakcb.'
   })
 
   const kinds = {}
