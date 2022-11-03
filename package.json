@@ -3,6 +3,7 @@
   "version": "0.0.0-placeholder",
   "description": "An adoption of the node process metrics of prom-client",
   "main": "index.js",
+  "types": "index.d.ts",
   "directories": {
     "example": "example"
   },
@@ -18,15 +19,12 @@
     "type": "git",
     "url": "git+https://github.com/marcbachmann/opentelemetry-node-metrics.git"
   },
-  "keywords": [
-    "opentelemetry",
-    "process",
-    "tracing",
-    "metrics",
-    "prom-client"
-  ],
+  "keywords": ["opentelemetry", "process", "tracing", "metrics", "prom-client"],
   "bugs": {
     "url": "https://github.com/marcbachmann/opentelemetry-node-metrics/issues"
   },
-  "homepage": "https://github.com/marcbachmann/opentelemetry-node-metrics#readme"
+  "homepage": "https://github.com/marcbachmann/opentelemetry-node-metrics#readme",
+  "devDependencies": {
+    "@opentelemetry/api-metrics": "^0.33.0"
+  }
 }
